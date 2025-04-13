@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>音声翻訳アプリ - 日本語⇔アラビア語</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: "Arial", sans-serif;
+      background: linear-gradient(to right, #f0f0f0, #e0f7fa);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      text-align: center;
+    }
+    h1 {
+      font-size: 2em;
+      margin-bottom: 10px;
+    }
+    p {
+      margin-bottom: 30px;
+    }
+    button {
+      font-size: 1.2em;
+      padding: 15px 30px;
+      margin: 10px;
+      border: none;
+      border-radius: 8px;
+      background-color: #00796b;
+      color: white;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    button:hover {
+      background-color: #004d40;
+    }
+    #textDisplay {
+      font-size: 1.4em;
+      margin-top: 20px;
+      max-width: 90%;
+      padding: 20px;
+      background: white;
+      border: 2px solid #00796b;
+      border-radius: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>🎙️ 音声翻訳アプリ</h1>
+  <p>日本語 ⇔ アラビア語</p>
+
+  <button onclick="startRecognition('ja-JP')">🎤 日本語で話す</button>
+  <button onclick="startRecognition('ar-SA')">🎤 アラビア語で話す</button>
+
+  <div id="textDisplay">ここに認識されたテキストが表示されます</div>
+
+  <script>
+    function startRecognition(lang) {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) {
+        alert('このブラウザは音声認識に対応していません');
+        return;
+      }
+
+      const recognition = new SpeechRecognition();
+      recognition.lang = lang;
+      recognition.interimResults = false;
+      recognition.maxAlternatives = 1;
+
+      recognition.onresult = function(event) {
+        const text = event.results[0][0].transcript;
+        document.getElementById('textDisplay').innerText = text;
+        translateText(text, lang);
+      };
+
+      recognition.onerror = function(event) {
+        alert('音声認識エラー: ' + event.error);
+      };
+
+      recognition.start();
+    }
+
+    function translateText(text, sourceLang) {
+      const targetLang = sourceLang === 'ja-JP' ? 'ar' : 'ja';
+      const googleTranslateURL = `https://translate.google.com/?sl=auto&tl=${targetLang}&text=${encodeURIComponent(text)}&op=translate`;
+      window.open(googleTranslateURL, '_blank');
+    }
+  </script>
+</body>
+</html>
